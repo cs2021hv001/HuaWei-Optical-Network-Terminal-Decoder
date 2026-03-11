@@ -1,0 +1,55 @@
+name: Remote Source Build
+
+on: 
+  workflow_dispatch: # 允许你手动点击按钮触发编译
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: 1. 下载并解压源码
+      run: |
+        # 替换下面的 URL 为你的临时存储下载链接
+        curl -L -o source.zip "https://your-storage-link.com/source.zip"
+        Expand-Archive -Path source.zip -DestinationPath .
+        # 确认解压后的目录结构
+        ls
+
+    - name: 2. 安装 Qt 环境
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '5.15.2'
+        arch: 'win64_mingw81'
+
+    - name: 3. 安装 zlib 依赖
+      run: |
+        vcpkg install zlib:x64-windows
+
+    - name: 4. 执行编译
+      shell: bash
+      run: |
+        # 进入你提到的解压后的具体目录
+        cd HuaWei-Optical-Network-Terminal-Decoder-master
+        
+        # 修正 .pro 文件中的 zlib 路径（自动化替换，防止手动修改）
+        # 这里假设 vcpkg 安装路径在默认位置
+        echo "INCLUDEPATH += C:/vcpkg/installed/x64-windows/include" >> hua.pro
+        echo "LIBS += -LC:/vcpkg/installed/x64-windows/lib -lzlib" >> hua.pro
+        
+        qmake hua.pro
+        mingw32-make -j2
+
+    - name: 5. 提取并打包成果物
+      run: |
+        mkdir release_bin
+        # 寻找生成的 exe（通常在 release 或当前目录）
+        find . -name "*.exe" -exec cp {} release_bin/ \;
+        # 使用 windeployqt 补全运行环境所需的 DLL
+        windeployqt release_bin/*.exe --no-translations
+
+    - name: 6. 上传结果
+      uses: actions/upload-artifact@v4
+      with:
+        name: Huawei-Decoder-Build
+        path: release_bin/
