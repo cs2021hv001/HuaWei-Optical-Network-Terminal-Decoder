@@ -16,7 +16,7 @@ jobs:
     - name: 1. 下载并解压源码
       run: |
         # 请确保此处的 URL 是正确的
-        curl -L -o https://www.sodatool.com/d/bfb73741-e8db-480d-8b3a-0934c0965a63 "你的源码下载链接"
+        curl -L -o source.zip "https://www.sodatool.com/d/bfb73741-e8db-480d-8b3a-0934c0965a63"
         Expand-Archive -Path source.zip -DestinationPath .
         # 记录文件夹名称，假设解压后是 HuaWei-Optical-Network-Terminal-Decoder-master
         ls
