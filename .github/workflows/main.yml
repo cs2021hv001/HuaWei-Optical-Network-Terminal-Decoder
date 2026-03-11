@@ -11,7 +11,7 @@ jobs:
     - name: 1. 下载并解压源码
       run: |
         # 替换下面的 URL 为你的临时存储下载链接
-        curl -L -o source.zip "https://your-storage-link.com/source.zip"
+        curl -L -o source.zip "https://www.sodatool.com/d/4dc19a40-9d26-4c85-b528-bcc0bef869c3"
         Expand-Archive -Path source.zip -DestinationPath .
         # 确认解压后的目录结构
         ls
